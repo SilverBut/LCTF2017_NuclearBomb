@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(nuclear_bomb)
 find_package(CUDA QUIET REQUIRED)
+set (CMAKE_CXX_STANDARD 11)
 
 # Pass options to NVCC
 set(
@@ -14,9 +15,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ./out/)
 
 # Specify binary name and source file to build it from
 cuda_add_executable(
-	matrix_cpu
-		src/matrix_cpu.c
-		src/matrix_gpu.cu
+	nuclear_bomb
+		src/nuclear_bomb.cpp
+		src/nuclear_core.cu
 )
 
 #add_custom_command(
