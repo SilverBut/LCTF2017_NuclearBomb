@@ -1,10 +1,12 @@
 # LCTF 2017: Nuclear Bomb
 
-The name is "nuclear bomb", because it is designed as a CUDA-acclelerated program on Nvidia GTX 960 Ti. However I can only debug it on GTX 1050 Ti, so plz tell me if it can be run under some older GPUs.
+The name is "nuclear bomb", because it is designed as a CUDA-acclelerated program on Nvidia CUDA cards.
 
-The flag is wrapped by a pair of angel brackets, instead of the normal style, thus providing a easier way to check the flag, and reproduce the key.
+Basically, the program will use input to get a long random cipher, do some bit operations and subititles using GPU, and compare with preset table.
 
-Flag is `LCTF{}`
+This is really easy, because only a first few bytes is used. And once you have got the first rand it get, you can get the original seed out, which can be concatenated into a long flag.
+
+See `ctf_output/readme.txt`(in chinese) for more info.
 
 This contest might be the last time for me, to write a challenge for CTF games. Thanks for XDSEC, and thanks for all my friends.
 
