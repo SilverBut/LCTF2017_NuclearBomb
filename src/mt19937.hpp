@@ -2,7 +2,8 @@
 #include <cinttypes>
 #include <cstdio>
 
-class mtrand {
+class mtrand
+{
 private:
   // Some ugly constants...
   // Assumes W = 32 (omitting this)
@@ -24,9 +25,11 @@ private:
   uint32_t mt[N];
   uint16_t index;
 
-  void twist() {
+  void twist()
+  {
     uint32_t i, x, xA;
-    for (i = 0; i < N; i++) {
+    for (i = 0; i < N; i++)
+    {
       x = (this->mt[i] & MASK_UPPER) + (this->mt[(i + 1) % N] & MASK_LOWER);
       xA = x >> 1;
       if (x & 0x1)
@@ -37,23 +40,27 @@ private:
   };
 
 public:
-  mtrand(const uint32_t seed) {
+  mtrand(const uint32_t seed)
+  {
     uint32_t i;
 
     this->mt[0] = seed;
 
-    for (i = 1; i < N; i++) {
+    for (i = 1; i < N; i++)
+    {
       this->mt[i] = (F * (this->mt[i - 1] ^ (this->mt[i - 1] >> 30)) + i);
     }
 
     this->index = N;
   };
   uint32_t rand(uint32_t range) { return (this->rand()) % range; };
-  uint32_t rand(void) {
+  uint32_t rand(void)
+  {
     uint32_t y;
     int i = this->index;
 
-    if (this->index >= N) {
+    if (this->index >= N)
+    {
       this->twist();
       i = this->index;
     }

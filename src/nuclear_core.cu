@@ -1,29 +1,52 @@
 #include "nuclear_core.hpp"
 
-__global__ void _cu_do_add(const int* inputA, const int* inputB, int* output) {
-	*output = *inputA + *inputB;
+#define ror32(p,q) ( ( (p) >> (q) ) | ( (p) << ( 32 - (q) ) ) )
+#define assert_cuda() do {	\
+	assert(!cudaGetLastError());\
+	cudaDeviceSynchronize();	\
+} while(0);
+
+typedef unsigned long uint32_t;
+#include "flag.hpp"
+#include <cassert>
+
+__global__ void _do_bomb(const unsigned char* gpu_sbox, unsigned char* stream){
+  int blockId = blockIdx.x + blockIdx.y * gridDim.x  
+                   + gridDim.x * gridDim.y * blockIdx.z;  
+  int threadId = blockId * (blockDim.x * blockDim.y * blockDim.z)  
+                     + (threadIdx.z * (blockDim.x * blockDim.y))  
+                     + (threadIdx.y * blockDim.x) + threadIdx.x;  	
+	unsigned int *stream_int = (unsigned int*)stream;
+	// For each int, ROR a value
+	unsigned char ror_value = threadIdx.x ^ threadIdx.y;
+	if ( threadId % 4 == 0 ){
+		stream_int[threadId/4]=ror32(stream_int[threadId/4], ror_value);
+	}
+	stream[threadId] = gpu_sbox[stream[threadId]];
 }
 
+int do_bomb(unsigned int* stream){
 
-int do_add(int inputA, int inputB){
+	unsigned char* dev_stream;
+	unsigned char* dev_sbox;
 
-	int  output;
-	int *dev_inputA, *dev_inputB, *dev_Output;
-	
-	cudaMalloc((void**)&dev_inputA, sizeof(int));
-	cudaMalloc((void**)&dev_inputB, sizeof(int));
-	cudaMalloc((void**)&dev_Output, sizeof(int));
+	cudaMalloc((void**)&dev_stream, table_size * table_nlen * 4);
+	cudaMemcpy(dev_stream, stream, table_size*table_nlen*4, cudaMemcpyHostToDevice);
+	assert_cuda();
 
-	cudaMemcpy(dev_inputA, &inputA, sizeof(int), cudaMemcpyHostToDevice);
-	cudaMemcpy(dev_inputB, &inputB, sizeof(int), cudaMemcpyHostToDevice);
+	cudaMalloc((void**)&dev_sbox, 256);
+	cudaMemcpy(dev_sbox, sbox, 256, cudaMemcpyHostToDevice);
+	assert_cuda();
 
-	_cu_do_add<<<1, 1>>>(dev_inputA, dev_inputB, dev_Output);
+	_do_bomb<<< dim3(4,table_nlen,1), dim3(table_block_width, table_block_width, 1) >>>(dev_sbox, dev_stream);
+	assert_cuda();
 
-	cudaMemcpy(&output, dev_Output, sizeof(int), cudaMemcpyDeviceToHost);
+	cudaMemcpy(stream, dev_stream, table_size*table_nlen*4, cudaMemcpyDeviceToHost);
+	assert_cuda();
 
-	cudaFree(dev_inputA);
-	cudaFree(dev_inputB);
-	cudaFree(dev_Output);
+	cudaFree(dev_stream);
+	cudaFree(dev_sbox);
+	assert_cuda();
 
-	return output;
+	return 0;
 }

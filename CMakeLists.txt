@@ -13,10 +13,13 @@ set(
 # Set a output dir
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ./out/)
 
+#add_definitions(-DSOLVE_FLAG)
+
 # Specify binary name and source file to build it from
 cuda_add_executable(
 	nuclear_bomb
 		src/nuclear_bomb.cpp
+		src/nuclear_core.cpp
 		src/nuclear_core.cu
 )
 
