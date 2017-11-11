@@ -13,9 +13,10 @@ set(
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ./out/)
 
 # Specify binary name and source file to build it from
-add_executable(
+cuda_add_executable(
 	matrix_cpu
 		src/matrix_cpu.c
+		src/matrix_gpu.cu
 )
 
 #add_custom_command(
