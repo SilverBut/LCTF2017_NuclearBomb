@@ -15,6 +15,8 @@
 		d. 将上面的一行取消注释
 		e. 执行： cmake . && make
 		f. 目前./out/nuclear_bomb就是题目文件（未strip）
+	2. 题目理论爆破时间需要10小时（i7-4712MQ，8线程，C++，未开优化），因此尽量在比赛结束10小时前放出
+	3. Hint：https://en.wikipedia.org/wiki/Mersenne_Twister
 题目Writeup：
 	http://github.com/SilverBut/LCTF2017_NuclearBomb
 	（私有Repo，比赛结束后开放）
